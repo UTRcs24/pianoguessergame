@@ -8,6 +8,7 @@ pygame.init()
 # Constants
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
+BORDER_COLOR = (200, 200, 200)  # Light gray color for borders
 SCREEN_WIDTH = 800 #Take up whole screen, not constant.
 SCREEN_HEIGHT = 400 #Same as above
 WHITE_KEY_WIDTH = 100
@@ -93,6 +94,10 @@ def game_loop():
         # Draw the piano
         for i, key in enumerate(white_keys):
             pygame.draw.rect(screen, WHITE, key)
+
+            # Draw the border around the white key (slightly smaller)
+            border_rect = key.inflate(-5, -5)  # Inflate by -5 pixels to create a smaller border
+            pygame.draw.rect(screen, BORDER_COLOR, border_rect, 3)  # Draw the border with a width of 3 pixels
             #THIS COULD BE WHERE THEY ARE BEING DRAWN WRONG
             if i < len(black_keys):
                 pygame.draw.rect(screen, BLACK, black_keys[i])
