@@ -8,8 +8,8 @@ pygame.init()
 # Constants
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 400
+SCREEN_WIDTH = 800 #Take up whole screen, not constant.
+SCREEN_HEIGHT = 400 #Same as above
 WHITE_KEY_WIDTH = 100
 WHITE_KEY_HEIGHT = 300
 BLACK_KEY_WIDTH = 60
@@ -49,7 +49,7 @@ white_keys = [
     pygame.Rect(WHITE_KEY_WIDTH * 4, 0, WHITE_KEY_WIDTH, WHITE_KEY_HEIGHT),
     pygame.Rect(WHITE_KEY_WIDTH * 5, 0, WHITE_KEY_WIDTH, WHITE_KEY_HEIGHT),
     pygame.Rect(WHITE_KEY_WIDTH * 6, 0, WHITE_KEY_WIDTH, WHITE_KEY_HEIGHT)
-]
+] #BROKEN RIGHT NOW, MUST MOVE KEYS
 
 black_keys = [
     pygame.Rect(WHITE_KEY_WIDTH - 30, 0, BLACK_KEY_WIDTH, BLACK_KEY_HEIGHT),
@@ -57,13 +57,13 @@ black_keys = [
     pygame.Rect(WHITE_KEY_WIDTH * 3 - 30, 0, BLACK_KEY_WIDTH, BLACK_KEY_HEIGHT),
     pygame.Rect(WHITE_KEY_WIDTH * 5 - 30, 0, BLACK_KEY_WIDTH, BLACK_KEY_HEIGHT),
     pygame.Rect(WHITE_KEY_WIDTH * 6 - 30, 0, BLACK_KEY_WIDTH, BLACK_KEY_HEIGHT)
-]
+] #MORE BROKEN THAN WHITE KEYS, I THINK
 
 # Function to play the tune
 def play_tune(tune):
     for note in tune:
         note.play()
-        time.sleep(0.5)
+        time.sleep(1)
 
 # Function to check if the player replicated the tune
 def check_tune(player_tune, tune):
@@ -93,6 +93,7 @@ def game_loop():
         # Draw the piano
         for i, key in enumerate(white_keys):
             pygame.draw.rect(screen, WHITE, key)
+            #THIS COULD BE WHERE THEY ARE BEING DRAWN WRONG
             if i < len(black_keys):
                 pygame.draw.rect(screen, BLACK, black_keys[i])
 
