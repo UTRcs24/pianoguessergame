@@ -70,8 +70,47 @@ def play_tune(tune):
 def check_tune(player_tune, tune):
     return player_tune == tune
 
+# Function to display the Game Over screen
+def game_over_screen(message, success):
+    screen.fill(BLACK)
+    font = pygame.font.Font(None, 72)
+    text = font.render(message, True, WHITE)
+    text_rect = text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 50))
+
+    # Draw a message based on success or failure
+    screen.blit(text, text_rect)
+
+    # Display options to restart or quit
+    font = pygame.font.Font(None, 36)
+    if success:
+        text_restart = font.render("Great job!\nThe next digit is: 0\nType Q to Quit", True, WHITE)
+    else:
+        text_restart = font.render("You Lost! Press R to Restart or Q to Quit", True, WHITE)
+
+    text_rect = text_restart.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 50))
+    screen.blit(text_restart, text_rect)
+
+    pygame.display.flip()
+
+    # Wait for player input to either restart or quit
+    waiting_for_input = True
+    while waiting_for_input:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_r and not success:  # Restart
+                    waiting_for_input = False
+                    return True #Restarts game by setting game_running to true when function returns
+                elif event.key == pygame.K_q:  # Quit
+                    return False #Ends game by setting game_running to false when function returns
+    return False
+
 # Main game loop
 def game_loop():
+    one_more_game = True #Keeps track if the user wants to play again.
     clock = pygame.time.Clock()
 
     # Generate a random melody (sequence of keys)
@@ -123,13 +162,16 @@ def game_loop():
                 if len(player_tune) == len(melody):
                     if check_tune(player_tune, melody):
                         print("You replicated the tune!")
+                        one_more_game = game_over_screen("Test", True)
                     else:
                         print("Try again!")
+                        one_more_game = game_over_screen("Test", False)
                     game_running = False
 
         pygame.display.flip()
         clock.tick(FPS)
-
+    if one_more_game:
+        game_loop()
     pygame.quit()
 
 # Run the game
