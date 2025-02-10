@@ -9,11 +9,11 @@ pygame.init()
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 BORDER_COLOR = (200, 200, 200)  # Light gray color for borders
-SCREEN_WIDTH = 800 #Take up whole screen, not constant.
+SCREEN_WIDTH = 800 #TO DO: Take up whole screen, not constant.
 SCREEN_HEIGHT = 400 #Same as above
 WHITE_KEY_WIDTH = 100
 WHITE_KEY_HEIGHT = 300
-BLACK_KEY_WIDTH = 60
+BLACK_KEY_WIDTH = 30
 BLACK_KEY_HEIGHT = 200
 FPS = 60
 
@@ -50,12 +50,12 @@ white_keys = [
     pygame.Rect(WHITE_KEY_WIDTH * 4, 0, WHITE_KEY_WIDTH, WHITE_KEY_HEIGHT),
     pygame.Rect(WHITE_KEY_WIDTH * 5, 0, WHITE_KEY_WIDTH, WHITE_KEY_HEIGHT),
     pygame.Rect(WHITE_KEY_WIDTH * 6, 0, WHITE_KEY_WIDTH, WHITE_KEY_HEIGHT)
-] #BROKEN RIGHT NOW, MUST MOVE KEYS
+]
 
 black_keys = [
     pygame.Rect(WHITE_KEY_WIDTH - 30, 0, BLACK_KEY_WIDTH, BLACK_KEY_HEIGHT),
     pygame.Rect(WHITE_KEY_WIDTH * 2 - 30, 0, BLACK_KEY_WIDTH, BLACK_KEY_HEIGHT),
-    pygame.Rect(WHITE_KEY_WIDTH * 3 - 30, 0, BLACK_KEY_WIDTH, BLACK_KEY_HEIGHT),
+    pygame.Rect(WHITE_KEY_WIDTH * 4 - 30, 0, BLACK_KEY_WIDTH, BLACK_KEY_HEIGHT),
     pygame.Rect(WHITE_KEY_WIDTH * 5 - 30, 0, BLACK_KEY_WIDTH, BLACK_KEY_HEIGHT),
     pygame.Rect(WHITE_KEY_WIDTH * 6 - 30, 0, BLACK_KEY_WIDTH, BLACK_KEY_HEIGHT)
 ] #MORE BROKEN THAN WHITE KEYS, I THINK
@@ -83,9 +83,9 @@ def game_over_screen(message, success):
     # Display options to restart or quit
     font = pygame.font.Font(None, 36)
     if success:
-        text_restart = font.render("Great job!\nThe next digit is: 0\nType Q to Quit", True, WHITE)
+        text_restart = font.render("The next digit is: 0 Type Q to Quit", True, WHITE)
     else:
-        text_restart = font.render("You Lost! Press R to Restart or Q to Quit", True, WHITE)
+        text_restart = font.render("Press R to Restart or Q to Quit", True, WHITE)
 
     text_rect = text_restart.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 50))
     screen.blit(text_restart, text_rect)
@@ -121,25 +121,28 @@ def game_loop():
     text = font.render("Click the keys in the same order!", True, (255, 255, 255))
     text_rect = text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT - 50))
 
-    # Play the melody
-    play_tune(melody)
-
     # Wait for player input
     player_tune = []
     game_running = True
+    melody_played = False #Keeps track of whether or not the melody's been played.
     while game_running:
         screen.fill((0, 0, 0))
-
+        
         # Draw the piano
-        for i, key in enumerate(white_keys):
-            pygame.draw.rect(screen, WHITE, key)
+        for i in range(len(white_keys)):
+            pygame.draw.rect(screen, WHITE, white_keys[i])
 
             # Draw the border around the white key (slightly smaller)
-            border_rect = key.inflate(-5, -5)  # Inflate by -5 pixels to create a smaller border
+            border_rect = white_keys[i].inflate(-5, -5)  # Inflate by -5 pixels to create a smaller border
             pygame.draw.rect(screen, BORDER_COLOR, border_rect, 3)  # Draw the border with a width of 3 pixels
-            #THIS COULD BE WHERE THEY ARE BEING DRAWN WRONG
-            if i < len(black_keys):
-                pygame.draw.rect(screen, BLACK, black_keys[i])
+        
+        for i in range(len(black_keys)):
+            pygame.draw.rect(screen, BLACK, black_keys[i])
+        
+        # Play the melody
+        if not melody_played:
+            melody_played = True
+            play_tune(melody)
 
         # Draw instructions
         screen.blit(text, text_rect)
@@ -162,10 +165,10 @@ def game_loop():
                 if len(player_tune) == len(melody):
                     if check_tune(player_tune, melody):
                         print("You replicated the tune!")
-                        one_more_game = game_over_screen("Test", True)
+                        one_more_game = game_over_screen("Correct!", True)
                     else:
                         print("Try again!")
-                        one_more_game = game_over_screen("Test", False)
+                        one_more_game = game_over_screen("Incorrect", False)
                     game_running = False
 
         pygame.display.flip()
