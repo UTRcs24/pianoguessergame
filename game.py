@@ -7,10 +7,9 @@ pygame.init()
 
 # Constants
 WHITE = (255, 255, 255)
+PLAYED = (105,105,105)
 BLACK = (0, 0, 0)
 BORDER_COLOR = (200, 200, 200)  # Light gray color for borders
-SCREEN_WIDTH = 800 #TO DO: Take up whole screen, not constant.
-SCREEN_HEIGHT = 400 #Same as above
 WHITE_KEY_WIDTH = 100
 WHITE_KEY_HEIGHT = 300
 BLACK_KEY_WIDTH = 30
@@ -18,7 +17,8 @@ BLACK_KEY_HEIGHT = 200
 FPS = 60
 
 # Screen setup
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+SCREEN_WIDTH, SCREEN_HEIGHT = screen.get_size()
 pygame.display.set_caption("Piano Melody Game")
 
 # Load sounds for the keys (assumes sound files are available)
@@ -41,27 +41,30 @@ keys = {
     pygame.K_j: B4
 }
 
+start_x = (SCREEN_WIDTH - WHITE_KEY_WIDTH*7)/2
+
 # Piano keys
 white_keys = [
-    pygame.Rect(0, 0, WHITE_KEY_WIDTH, WHITE_KEY_HEIGHT),
-    pygame.Rect(WHITE_KEY_WIDTH, 0, WHITE_KEY_WIDTH, WHITE_KEY_HEIGHT),
-    pygame.Rect(WHITE_KEY_WIDTH * 2, 0, WHITE_KEY_WIDTH, WHITE_KEY_HEIGHT),
-    pygame.Rect(WHITE_KEY_WIDTH * 3, 0, WHITE_KEY_WIDTH, WHITE_KEY_HEIGHT),
-    pygame.Rect(WHITE_KEY_WIDTH * 4, 0, WHITE_KEY_WIDTH, WHITE_KEY_HEIGHT),
-    pygame.Rect(WHITE_KEY_WIDTH * 5, 0, WHITE_KEY_WIDTH, WHITE_KEY_HEIGHT),
-    pygame.Rect(WHITE_KEY_WIDTH * 6, 0, WHITE_KEY_WIDTH, WHITE_KEY_HEIGHT)
+    pygame.Rect(start_x, SCREEN_HEIGHT/2, WHITE_KEY_WIDTH, WHITE_KEY_HEIGHT),
+    pygame.Rect(start_x+WHITE_KEY_WIDTH, SCREEN_HEIGHT/2, WHITE_KEY_WIDTH, WHITE_KEY_HEIGHT),
+    pygame.Rect(start_x+(WHITE_KEY_WIDTH * 2), SCREEN_HEIGHT/2, WHITE_KEY_WIDTH, WHITE_KEY_HEIGHT),
+    pygame.Rect(start_x+(WHITE_KEY_WIDTH * 3), SCREEN_HEIGHT/2, WHITE_KEY_WIDTH, WHITE_KEY_HEIGHT),
+    pygame.Rect(start_x+(WHITE_KEY_WIDTH * 4), SCREEN_HEIGHT/2, WHITE_KEY_WIDTH, WHITE_KEY_HEIGHT),
+    pygame.Rect(start_x+(WHITE_KEY_WIDTH * 5), SCREEN_HEIGHT/2, WHITE_KEY_WIDTH, WHITE_KEY_HEIGHT),
+    pygame.Rect(start_x+(WHITE_KEY_WIDTH * 6), SCREEN_HEIGHT/2, WHITE_KEY_WIDTH, WHITE_KEY_HEIGHT)
 ]
 
 black_keys = [
-    pygame.Rect(WHITE_KEY_WIDTH - 30, 0, BLACK_KEY_WIDTH, BLACK_KEY_HEIGHT),
-    pygame.Rect(WHITE_KEY_WIDTH * 2 - 30, 0, BLACK_KEY_WIDTH, BLACK_KEY_HEIGHT),
-    pygame.Rect(WHITE_KEY_WIDTH * 4 - 30, 0, BLACK_KEY_WIDTH, BLACK_KEY_HEIGHT),
-    pygame.Rect(WHITE_KEY_WIDTH * 5 - 30, 0, BLACK_KEY_WIDTH, BLACK_KEY_HEIGHT),
-    pygame.Rect(WHITE_KEY_WIDTH * 6 - 30, 0, BLACK_KEY_WIDTH, BLACK_KEY_HEIGHT)
-] #MORE BROKEN THAN WHITE KEYS, I THINK
+    pygame.Rect(start_x+(WHITE_KEY_WIDTH - 30), SCREEN_HEIGHT/2, BLACK_KEY_WIDTH, BLACK_KEY_HEIGHT),
+    pygame.Rect(start_x+(WHITE_KEY_WIDTH * 2 - 30), SCREEN_HEIGHT/2, BLACK_KEY_WIDTH, BLACK_KEY_HEIGHT),
+    pygame.Rect(start_x+(WHITE_KEY_WIDTH * 4 - 30), SCREEN_HEIGHT/2, BLACK_KEY_WIDTH, BLACK_KEY_HEIGHT),
+    pygame.Rect(start_x+(WHITE_KEY_WIDTH * 5 - 30), SCREEN_HEIGHT/2, BLACK_KEY_WIDTH, BLACK_KEY_HEIGHT),
+    pygame.Rect(start_x+(WHITE_KEY_WIDTH * 6 - 30), SCREEN_HEIGHT/2, BLACK_KEY_WIDTH, BLACK_KEY_HEIGHT)
+]
 
 # Function to play the tune
 def play_tune(tune):
+    
     for note in tune:
         note.play()
         time.sleep(1)
@@ -138,11 +141,6 @@ def game_loop():
         
         for i in range(len(black_keys)):
             pygame.draw.rect(screen, BLACK, black_keys[i])
-        
-        # Play the melody
-        if not melody_played:
-            melody_played = True
-            play_tune(melody)
 
         # Draw instructions
         screen.blit(text, text_rect)
@@ -158,6 +156,7 @@ def game_loop():
                 # Check which key was clicked
                 for i, key in enumerate(white_keys):
                     if key.collidepoint(mouse_x, mouse_y):
+                        pygame.draw.rect(screen, PLAYED, key)
                         keys[list(keys.keys())[i]].play()  # Play the sound of the clicked key
                         player_tune.append(keys[list(keys.keys())[i]])
 
@@ -172,6 +171,12 @@ def game_loop():
                     game_running = False
 
         pygame.display.flip()
+        
+        # Play the melody
+        if not melody_played:
+            melody_played = True
+            play_tune(melody)
+            
         clock.tick(FPS)
     if one_more_game:
         game_loop()
